@@ -1,0 +1,209 @@
+services:
+
+  core:
+    build:
+      context: ./core/core
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    group_add:
+      - ${DOCKER_GID}
+    environment:
+      TZ: ${TZ}
+      # fetcher configurations
+      JOB_FETCHER_INTERVAL_SECONDS: ${JOB_FETCHER_INTERVAL_SECONDS}
+      JOB_FETCHER_LIMIT: ${JOB_FETCHER_LIMIT}
+      JOB_FETCHER_THRESHOLD: ${JOB_FETCHER_THRESHOLD}
+      DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS: ${DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS}
+      DEVICE_FETCHER_INITIAL_BACKOFF_MAX_SECONDS: ${DEVICE_FETCHER_INITIAL_BACKOFF_MAX_SECONDS}
+      DEVICE_FETCHER_LOOP_INTERVAL_SECONDS: ${DEVICE_FETCHER_LOOP_INTERVAL_SECONDS}
+      DEVICE_FETCHER_LOOP_BACKOFF_MAX_SECONDS: ${DEVICE_FETCHER_LOOP_BACKOFF_MAX_SECONDS}
+      DEVICE_FETCHER_ENABLE_DEVICE_INFO_UPDATE: ${DEVICE_FETCHER_ENABLE_DEVICE_INFO_UPDATE}
+      # repository configurations
+      JOB_REPOSITORY_URL: ${JOB_REPOSITORY_URL}
+      JOB_REPOSITORY_API_KEY: ${JOB_REPOSITORY_API_KEY}
+      JOB_REPOSITORY_WORKERS: ${JOB_REPOSITORY_WORKERS}
+      DEVICE_REPOSITORY_URL: ${JOB_REPOSITORY_URL} # the same values as the job repository
+      DEVICE_REPOSITORY_API_KEY: ${JOB_REPOSITORY_API_KEY} # the same values as the job repository
+      DEVICE_REPOSITORY_WORKERS: ${DEVICE_REPOSITORY_WORKERS}
+      # step configurations
+      MITIGATOR_ADDRESS: ${MITIGATOR_ADDRESS}
+      ESTIMATOR_ADDRESS: ${ESTIMATOR_ADDRESS}
+      COMBINER_ADDRESS: ${COMBINER_ADDRESS}
+      TRANQU_ADDRESS: ${TRANQU_ADDRESS}
+      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+      # sse configurations
+      SSE_ENGINE_ADDRESS: ${SSE_ENGINE_ADDRESS} 
+      SSE_ENGINE_IP: ${SUBNET_PREFIX}.${SSE_ENGINE_IP_POSTFIX} 
+      SSE_HOST_WORK_PATH: ${SSE_HOST_WORK_PATH}
+      SSE_DELETE_HOST_TEMP_DIRS: ${SSE_DELETE_HOST_TEMP_DIRS}
+      SSE_CONTAINER_PATH: ${SSE_CONTAINER_PATH}
+      SSE_USER_PROGRAM_NAME: ${SSE_USER_PROGRAM_NAME}
+      SSE_RESULT_NAME: ${SSE_RESULT_NAME}
+      SSE_LOG_NAME: ${SSE_LOG_NAME}
+      SSE_CONTAINER_IMAGE: ${SSE_CONTAINER_IMAGE}
+      SSE_CONTAINER_DISK_QUOTA: ${SSE_CONTAINER_DISK_QUOTA}
+      SSE_CONTAINER_MEMORY: ${SSE_CONTAINER_MEMORY}
+      SSE_CONTAINER_CPU_SET: ${SSE_CONTAINER_CPU_SET}
+      SSE_CONTAINER_NETWORK: ${SSE_CONTAINER_NETWORK}
+      SSE_TIMEOUT: ${SSE_TIMEOUT}
+      SSE_MAX_FILE_SIZE: ${SSE_MAX_FILE_SIZE}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.10
+    volumes:
+      - /app/.venv
+      - ./core/core/config:/app/config
+      - ./logs/core:/app/logs
+      - ./sse_work:/sse_work
+      - /var/run/docker.sock:/var/run/docker.sock
+    tty: true
+
+  sse_engine:
+    build:
+      context: ./sse_engine/core
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    group_add:
+      - ${DOCKER_GID}
+    environment:
+      TZ: ${TZ}
+      # fetcher configurations
+      SSE_ENGINE_ADDRESS: ${SSE_ENGINE_ADDRESS}
+      DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS: ${DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS}
+      DEVICE_FETCHER_INITIAL_BACKOFF_MAX_SECONDS: ${DEVICE_FETCHER_INITIAL_BACKOFF_MAX_SECONDS}
+      DEVICE_FETCHER_LOOP_INTERVAL_SECONDS: ${DEVICE_FETCHER_LOOP_INTERVAL_SECONDS}
+      DEVICE_FETCHER_LOOP_BACKOFF_MAX_SECONDS: ${DEVICE_FETCHER_LOOP_BACKOFF_MAX_SECONDS}
+      DEVICE_FETCHER_ENABLE_DEVICE_INFO_UPDATE: ${DEVICE_FETCHER_ENABLE_DEVICE_INFO_UPDATE}
+      # step configurations
+      MITIGATOR_ADDRESS: ${MITIGATOR_ADDRESS}
+      ESTIMATOR_ADDRESS: ${ESTIMATOR_ADDRESS}
+      COMBINER_ADDRESS: ${COMBINER_ADDRESS}
+      TRANQU_ADDRESS: ${TRANQU_ADDRESS}
+      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.14
+    volumes:
+      - /app/.venv
+      - ./core/core/config:/app/config
+      - ./logs/sse_engine:/app/logs
+    tty: true
+    command: "uv run python src/oqtopus_engine_core/app.py -c config/sse_engine_config.yaml -l config/sse_engine_logging.yaml"
+
+  mitigator:
+    build:
+      context: ./mitigator/mitigator
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    environment:
+      TZ: ${TZ}
+      ADDRESS: ${MITIGATOR_ADDRESS}
+      WORKERS: ${MITIGATOR_WORKERS}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.11
+    volumes:
+      - /app/.venv
+      - ./mitigator/mitigator/config:/app/config
+      - ./logs/mitigator:/app/logs
+    tty: true
+
+  estimator:
+    build:
+      context: ./estimator/estimator
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    environment:
+      TZ: ${TZ}
+      ADDRESS: ${ESTIMATOR_ADDRESS}
+      WORKERS: ${ESTIMATOR_WORKERS}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.12
+    volumes:
+      - /app/.venv
+      - ./estimator/estimator/config:/app/config
+      - ./logs/estimator:/app/logs
+    tty: true
+
+  combiner:
+    build:
+      context: ./combiner/combiner
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    environment:
+      TZ: ${TZ}
+      ADDRESS: ${COMBINER_ADDRESS}
+      WORKERS: ${COMBINER_WORKERS}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.13
+    volumes:
+      - /app/.venv
+      - ./combiner/combiner/config:/app/config
+      - ./logs/combiner:/app/logs
+    tty: true
+
+  tranqu:
+    build:
+      context: ./tranqu-server
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    environment:
+      TZ: ${TZ}
+      ADDRESS: ${TRANQU_ADDRESS}
+      WORKERS: ${TRANQU_WORKERS}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.20
+    volumes:
+      - /app/.venv
+      - ./tranqu-server/config:/app/config
+      - ./logs/tranqu-server:/app/logs
+    tty: true
+
+  gateway:
+    build:
+      context: ./device-gateway
+      dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: ${UID}:${GID}
+    environment:
+      TZ: ${TZ}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.21
+    volumes:
+      - /app/.venv
+      - ./device-gateway/config:/app/config
+      - ./device-gateway/src:/app/src
+      - ./logs/device-gateway:/app/logs
+    tty: true
+
+networks:
+  context_app_net:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: ${SUBNET_PREFIX}.0/24

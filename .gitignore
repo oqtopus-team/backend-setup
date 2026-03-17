@@ -1,0 +1,15 @@
+# applications
+combiner
+core
+device-gateway
+estimator
+mitigator
+sse_engine
+sse_runtime
+tranqu-server
+
+# logs
+logs
+
+# temporary files
+sse_work
