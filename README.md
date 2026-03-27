@@ -63,8 +63,8 @@ The following services constitute the backend system:
   A service used to compute expectation values of quantum circuits.
 
 - `combiner`  
-  A service that enables multi-programming.  
-  It combines multiple quantum circuits into a single circuit and splits the computation results afterward.
+  A service that enables multi-programming. 
+  It combines multiple quantum circuits into a single circuit.
 
 - `tranqu (tranqu server)`  
   Provides transpilation services.
