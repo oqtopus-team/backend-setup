@@ -100,6 +100,7 @@ the following:
 oqtopus-xxx/
 ├─ combiner/          # OQTOPUS Engine combiner service
 ├─ config/
+│  ├─ .env            # configuration file (not present immediately after running install.sh; see Service Configuration)
 │  └─ .env.local      # template for .env (copy to .env before editing; see Service Configuration)
 ├─ core/              # OQTOPUS Engine core service
 ├─ device-gateway/    # device gateway service
