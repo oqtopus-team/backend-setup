@@ -100,8 +100,7 @@ the following:
 oqtopus-xxx/
 ├─ combiner/          # OQTOPUS Engine combiner service
 ├─ config/
-│  ├─ .env            # global environment configuration (network, ports, ...)
-│  └─ .env.local      # template for .env (copy to .env before editing)
+│  └─ .env.local      # template for .env (copy to .env before editing; see Service Configuration)
 ├─ core/              # OQTOPUS Engine core service
 ├─ device-gateway/    # device gateway service
 ├─ estimator/         # OQTOPUS Engine estimator service
@@ -179,7 +178,7 @@ The `install.sh` script performs the following tasks:
 
 ### Edit the global configuration file
 
-First, create `config/.env` from the provided template and configure the global settings.
+First, create `config/.env` from the provided template and configure the settings.
 This file manages environment-wide variables such as networking, subnets, and service connection details.
 
 ```bash
