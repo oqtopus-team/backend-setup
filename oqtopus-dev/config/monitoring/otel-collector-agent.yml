@@ -1,0 +1,95 @@
+# OTel Collector Agent Configuration
+# Collects host/container metrics and pushes to monitoring server
+
+receivers:
+  hostmetrics:
+    collection_interval: 15s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+      disk:
+      filesystem:
+        exclude_mount_points:
+          match_type: regexp
+          mount_points: ["/boot/efi", "/hostfs/boot/efi"]
+      load:
+      network:
+      process:
+        mute_process_exe_error: true
+        mute_process_io_error: true
+        mute_process_user_error: true
+        include:
+          match_type: regexp
+          names: [".*"]
+      processes:
+
+  docker_stats:
+    endpoint: unix:///var/run/docker.sock
+    collection_interval: 15s
+    timeout: 20s
+    api_version: "1.40"
+    metrics:
+      container.cpu.utilization:
+        enabled: true
+      container.memory.utilization:
+        enabled: true
+      container.uptime:
+        enabled: true
+
+  # Receive OTLP from auto-instrumented services
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+
+  batch:
+    timeout: 10s
+    send_batch_size: 1024
+
+  resource:
+    attributes:
+      - key: instance
+        value: "${env:INSTANCE_NAME}"
+        action: upsert
+      - key: device_id
+        value: "${env:DEVICE_ID}"
+        action: upsert
+
+exporters:
+  otlphttp:
+    endpoint: "http://${env:MONITORING_SERVER}:4318"
+    compression: gzip
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [hostmetrics, docker_stats, otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlphttp]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlphttp]
