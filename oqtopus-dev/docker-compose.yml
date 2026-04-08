@@ -322,7 +322,7 @@ services:
     group_add:
       - ${DOCKER_GID}
     volumes:
-      - ./config/monitoring/otel-collector-agent.yml:/etc/otelcol-contrib/config.yaml:ro
+      - ./config/monitoring/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/hostfs:ro
     environment:

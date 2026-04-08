@@ -1,4 +1,4 @@
-# OTel Collector Agent Configuration
+# OTel Collector Configuration
 # Collects host/container metrics and pushes to monitoring server
 
 receivers:
