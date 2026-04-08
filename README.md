@@ -85,7 +85,7 @@ and helper scripts:
 
 ```text
 oqtopus-xxx/
-├─ config/.env
+├─ config/.env.local
 ├─ docker-compose.yml
 ├─ install.sh
 └─ Makefile
@@ -100,7 +100,8 @@ the following:
 oqtopus-xxx/
 ├─ combiner/          # OQTOPUS Engine combiner service
 ├─ config/
-│  └─ .env            # global environment configuration (network, ports, ...)
+│  ├─ .env            # configuration file (not present immediately after running install.sh; see Service Configuration)
+│  └─ .env.local      # template for .env (copy to .env before editing; see Service Configuration)
 ├─ core/              # OQTOPUS Engine core service
 ├─ device-gateway/    # device gateway service
 ├─ estimator/         # OQTOPUS Engine estimator service
@@ -178,8 +179,15 @@ The `install.sh` script performs the following tasks:
 
 ### Edit the global configuration file
 
-First, configure the global settings in `config/.env`. This file manages environment-wide variables
-such as networking, subnets, and service connection details.
+First, create `config/.env` from the provided template and configure the settings.
+This file manages environment-wide variables such as networking, subnets, and service connection details.
+
+```bash
+cd config
+cp .env.local .env
+```
+
+Then edit `config/.env` to match your environment.
 
 The `config/.env` file contains several important settings used by the backend services.
 
@@ -287,6 +295,10 @@ Replace `<app>` with one of the service names listed above.
 > [!NOTE]
 > When you run `up-<app>` for the first time, Docker will automatically start the build process.
 > Please be aware that this is a heavy task and may take some time depending on your environment.
+
+> [!IMPORTANT]
+> When installing for the first time or updating an application, run `make build-<app>` before starting the service.
+> This ensures the latest source code is pulled and the Docker image is rebuilt with the most recent changes.
 
 The `device-gateway` service provides additional commands that are not listed here.
 For details, refer to the `Makefile`.
