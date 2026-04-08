@@ -56,10 +56,10 @@ services:
       MP_AUTO_BUFFER_MONITOR_INTERVAL_SECONDS: ${MP_AUTO_BUFFER_MONITOR_INTERVAL_SECONDS}
       MP_AUTO_BUFFER_MAX_BATCH_SIZE: ${MP_AUTO_BUFFER_MAX_BATCH_SIZE}
       MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED: ${MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-core
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -106,10 +106,10 @@ services:
       COMBINER_ADDRESS: ${COMBINER_ADDRESS}
       TRANQU_ADDRESS: ${TRANQU_ADDRESS}
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-sse-engine
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -143,10 +143,10 @@ services:
       TZ: ${TZ}
       ADDRESS: ${MITIGATOR_ADDRESS}
       WORKERS: ${MITIGATOR_WORKERS}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-mitigator
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -179,10 +179,10 @@ services:
       TZ: ${TZ}
       ADDRESS: ${ESTIMATOR_ADDRESS}
       WORKERS: ${ESTIMATOR_WORKERS}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-estimator
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -215,10 +215,10 @@ services:
       TZ: ${TZ}
       ADDRESS: ${COMBINER_ADDRESS}
       WORKERS: ${COMBINER_WORKERS}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-combiner
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -251,10 +251,10 @@ services:
       TZ: ${TZ}
       ADDRESS: ${TRANQU_ADDRESS}
       WORKERS: ${TRANQU_WORKERS}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-tranqu
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -285,10 +285,10 @@ services:
     command: ["uv", "run", "python", "src/device_gateway/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      # OTel auto-instrumentation (disabled by default)
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-gateway
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
       OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-otlp}
       OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-otlp}
@@ -309,10 +309,9 @@ services:
     tty: true
 
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # Monitoring Agents (optional: COMPOSE_PROFILES=monitoring)
+  # Monitoring Agents
   #
-  # To enable: add COMPOSE_PROFILES=monitoring to config/.env
-  # These services will NOT start unless explicitly enabled.
+  # MONITORING_ENABLED=true で起動 + OTel 自動計装が有効になる
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   otel-collector:
