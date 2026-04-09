@@ -20,14 +20,6 @@ receivers:
           mount_points: ["/boot/efi", "/hostfs/boot/efi"]
       load:
       network:
-      process:
-        mute_process_exe_error: true
-        mute_process_io_error: true
-        mute_process_user_error: true
-        include:
-          match_type: regexp
-          names: [".*"]
-      processes:
 
   docker_stats:
     endpoint: unix:///var/run/docker.sock
