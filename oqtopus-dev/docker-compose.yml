@@ -308,11 +308,11 @@ services:
       - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
-  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # ------------------
   # Monitoring Agents
   #
-  # MONITORING_ENABLED=true で起動 + OTel 自動計装が有効になる
-  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # MONITORING_ENABLED=true starts these containers + enables OTel auto-instrumentation
+  # ------------------
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
