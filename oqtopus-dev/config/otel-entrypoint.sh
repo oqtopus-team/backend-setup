@@ -15,11 +15,6 @@ if [ -d "/app/.venv/bin" ]; then
     export PATH="/app/.venv/bin:$PATH"
 fi
 
-USE_UV=false
-if command -v uv &> /dev/null; then
-    USE_UV=true
-fi
-
 OTEL_ENABLED="${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}"
 
 if [ "$OTEL_ENABLED" = "true" ]; then
@@ -27,21 +22,13 @@ if [ "$OTEL_ENABLED" = "true" ]; then
 
     if ! command -v opentelemetry-instrument &> /dev/null; then
         echo "[OTel] Installing opentelemetry-instrument..."
-        if [ "$USE_UV" = "true" ]; then
-            uv pip install \
-                opentelemetry-distro \
-                opentelemetry-exporter-otlp \
-                opentelemetry-instrumentation-system-metrics
-            uv run opentelemetry-bootstrap -a requirements 2>/dev/null | while read -r pkg; do
-                uv pip install "$pkg" 2>/dev/null || true
-            done
-        else
-            pip install --quiet --disable-pip-version-check \
-                opentelemetry-distro \
-                opentelemetry-exporter-otlp \
-                opentelemetry-instrumentation-system-metrics
-            opentelemetry-bootstrap -a install 2>/dev/null || true
-        fi
+        uv pip install \
+            opentelemetry-distro \
+            opentelemetry-exporter-otlp \
+            opentelemetry-instrumentation-system-metrics
+        uv run opentelemetry-bootstrap -a requirements 2>/dev/null | while read -r pkg; do
+            uv pip install "$pkg" 2>/dev/null || true
+        done
     fi
 
     echo "[OTel] Starting with auto-instrumentation: $@"
