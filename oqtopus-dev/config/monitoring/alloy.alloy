@@ -47,7 +47,7 @@ pyroscope.write "default" {
   }
 
   external_labels = {
-    instance  = env("INSTANCE_NAME"),
+    instance  = env("DEVICE_ID"),
     device_id = env("DEVICE_ID"),
   }
 }
