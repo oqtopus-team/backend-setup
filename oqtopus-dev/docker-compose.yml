@@ -10,6 +10,8 @@ services:
     user: ${UID}:${GID}
     group_add:
       - ${DOCKER_GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/oqtopus_engine_core/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
       # fetcher configurations
@@ -35,8 +37,8 @@ services:
       TRANQU_ADDRESS: ${TRANQU_ADDRESS}
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
       # sse configurations
-      SSE_ENGINE_ADDRESS: ${SSE_ENGINE_ADDRESS} 
-      SSE_ENGINE_IP: ${SUBNET_PREFIX}.${SSE_ENGINE_IP_POSTFIX} 
+      SSE_ENGINE_ADDRESS: ${SSE_ENGINE_ADDRESS}
+      SSE_ENGINE_IP: ${SUBNET_PREFIX}.${SSE_ENGINE_IP_POSTFIX}
       SSE_HOST_WORK_PATH: ${SSE_HOST_WORK_PATH}
       SSE_DELETE_HOST_TEMP_DIRS: ${SSE_DELETE_HOST_TEMP_DIRS}
       SSE_CONTAINER_PATH: ${SSE_CONTAINER_PATH}
@@ -54,6 +56,14 @@ services:
       MP_AUTO_BUFFER_MONITOR_INTERVAL_SECONDS: ${MP_AUTO_BUFFER_MONITOR_INTERVAL_SECONDS}
       MP_AUTO_BUFFER_MAX_BATCH_SIZE: ${MP_AUTO_BUFFER_MAX_BATCH_SIZE}
       MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED: ${MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-core
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.10
@@ -63,6 +73,7 @@ services:
       - ./logs/core:/app/logs
       - ./sse_work:/sse_work
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
   sse_engine:
@@ -75,6 +86,7 @@ services:
     user: ${UID}:${GID}
     group_add:
       - ${DOCKER_GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
     environment:
       TZ: ${TZ}
       # fetcher configurations
@@ -90,6 +102,14 @@ services:
       COMBINER_ADDRESS: ${COMBINER_ADDRESS}
       TRANQU_ADDRESS: ${TRANQU_ADDRESS}
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-sse-engine
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.14
@@ -97,6 +117,7 @@ services:
       - /app/.venv
       - ./core/core/config:/app/config
       - ./logs/sse_engine:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
     command: "uv run python src/oqtopus_engine_core/app.py -c config/sse_engine_config.yaml -l config/sse_engine_logging.yaml"
 
@@ -108,10 +129,20 @@ services:
         UID: ${UID}
         GID: ${GID}
     user: ${UID}:${GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/oqtopus_engine_mitigator/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
       ADDRESS: ${MITIGATOR_ADDRESS}
       WORKERS: ${MITIGATOR_WORKERS}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-mitigator
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.11
@@ -119,6 +150,7 @@ services:
       - /app/.venv
       - ./mitigator/mitigator/config:/app/config
       - ./logs/mitigator:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
   estimator:
@@ -129,10 +161,20 @@ services:
         UID: ${UID}
         GID: ${GID}
     user: ${UID}:${GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/oqtopus_engine_estimator/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
       ADDRESS: ${ESTIMATOR_ADDRESS}
       WORKERS: ${ESTIMATOR_WORKERS}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-estimator
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.12
@@ -140,6 +182,7 @@ services:
       - /app/.venv
       - ./estimator/estimator/config:/app/config
       - ./logs/estimator:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
   combiner:
@@ -150,10 +193,20 @@ services:
         UID: ${UID}
         GID: ${GID}
     user: ${UID}:${GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/oqtopus_engine_combiner/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
       ADDRESS: ${COMBINER_ADDRESS}
       WORKERS: ${COMBINER_WORKERS}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-combiner
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.13
@@ -161,6 +214,7 @@ services:
       - /app/.venv
       - ./combiner/combiner/config:/app/config
       - ./logs/combiner:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
   tranqu:
@@ -171,10 +225,20 @@ services:
         UID: ${UID}
         GID: ${GID}
     user: ${UID}:${GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/tranqu_server/proto/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
       ADDRESS: ${TRANQU_ADDRESS}
       WORKERS: ${TRANQU_WORKERS}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-tranqu
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.20
@@ -182,6 +246,7 @@ services:
       - /app/.venv
       - ./tranqu-server/config:/app/config
       - ./logs/tranqu-server:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
 
   gateway:
@@ -192,8 +257,18 @@ services:
         UID: ${UID}
         GID: ${GID}
     user: ${UID}:${GID}
+    entrypoint: ["/otel/otel-entrypoint.sh"]
+    command: ["uv", "run", "python", "src/device_gateway/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
+      # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-gateway
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
+      OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
+      OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.21
@@ -202,7 +277,68 @@ services:
       - ./device-gateway/config:/app/config
       - ./device-gateway/src:/app/src
       - ./logs/device-gateway:/app/logs
+      - ./config/otel-entrypoint.sh:/otel/otel-entrypoint.sh:ro
     tty: true
+
+  # ------------------
+  # Monitoring Agents
+  #
+  # MONITORING_ENABLED=true starts these containers + enables OTel auto-instrumentation
+  # ------------------
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    restart: unless-stopped
+    profiles: [monitoring]
+    user: "0:0"
+    group_add:
+      - ${DOCKER_GID}
+    volumes:
+      - ./config/monitoring/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+    environment:
+      HOST_PROC: /hostfs/proc
+      HOST_SYS: /hostfs/sys
+      HOST_ETC: /hostfs/etc
+      HOST_VAR: /hostfs/var
+      MONITORING_SERVER: ${MONITORING_SERVER:-host.docker.internal}
+      DEVICE_ID: ${DEVICE_ID:-Kawasaki}
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.30
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+        reservations:
+          memory: 128m
+
+
+  alloy:
+    image: grafana/alloy:latest
+    restart: unless-stopped
+    profiles: [monitoring]
+    privileged: true
+    pid: host
+    volumes:
+      - ./config/monitoring/alloy.alloy:/etc/alloy/config.alloy:ro
+      - /sys/kernel:/sys/kernel:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["run", "/etc/alloy/config.alloy"]
+    environment:
+      MONITORING_SERVER: ${MONITORING_SERVER:-host.docker.internal}
+      DEVICE_ID: ${DEVICE_ID:-Kawasaki}
+    networks:
+      context_app_net:
+        ipv4_address: ${SUBNET_PREFIX}.33
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+        reservations:
+          memory: 384m
 
 networks:
   context_app_net:

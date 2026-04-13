@@ -1,0 +1,58 @@
+// Grafana Alloy Configuration
+// eBPF profiling for Python application containers
+
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "python_services" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = ".*(core|sse_engine|mitigator|estimator|combiner|tranqu|gateway).*"
+    action        = "keep"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = ".*-(core|sse_engine|mitigator|estimator|combiner|tranqu|gateway)-.*"
+    target_label  = "service_name"
+    replacement   = "oqtopus-$1"
+  }
+}
+
+pyroscope.ebpf "default" {
+  forward_to = [pyroscope.write.default.receiver]
+
+  targets      = discovery.relabel.python_services.output
+  targets_only = true
+  sample_rate  = 97
+
+  python_enabled  = true
+  ruby_enabled    = false
+  php_enabled     = false
+  hotspot_enabled = false
+  dotnet_enabled  = false
+  v8_enabled      = false
+  perl_enabled    = false
+
+  collect_kernel_profile = false
+  demangle = "none"
+}
+
+pyroscope.write "default" {
+  endpoint {
+    url = "http://" + env("MONITORING_SERVER") + ":4040"
+  }
+
+  external_labels = {
+    instance  = env("DEVICE_ID"),
+    device_id = env("DEVICE_ID"),
+  }
+}
+
+logging {
+  level  = "info"
+  format = "logfmt"
+}
