@@ -60,7 +60,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-core
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -106,7 +106,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-sse-engine
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -139,7 +139,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-mitigator
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -171,7 +171,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-estimator
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -203,7 +203,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-combiner
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -235,7 +235,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-tranqu
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -265,7 +265,7 @@ services:
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-gateway
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-Kawasaki}
+      OTEL_RESOURCE_ATTRIBUTES: service.instance.id=${DEVICE_ID:-qulacs}
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_PYTHON_EXCLUDED_URLS: health,healthz,ready,GetServiceStatus
       OTEL_AUTO_INSTRUMENTATION_ENABLED: ${MONITORING_ENABLED:-false}
@@ -303,7 +303,7 @@ services:
       HOST_ETC: /hostfs/etc
       HOST_VAR: /hostfs/var
       MONITORING_SERVER: ${MONITORING_SERVER:-host.docker.internal}
-      DEVICE_ID: ${DEVICE_ID:-Kawasaki}
+      DEVICE_ID: ${DEVICE_ID:-qulacs}
     command: ["--config=/etc/otelcol-contrib/config.yaml"]
     networks:
       context_app_net:
@@ -329,7 +329,7 @@ services:
     command: ["run", "/etc/alloy/config.alloy"]
     environment:
       MONITORING_SERVER: ${MONITORING_SERVER:-host.docker.internal}
-      DEVICE_ID: ${DEVICE_ID:-Kawasaki}
+      DEVICE_ID: ${DEVICE_ID:-qulacs}
     networks:
       context_app_net:
         ipv4_address: ${SUBNET_PREFIX}.33
