@@ -15,4 +15,4 @@ logs
 sse_work
 
 # local environment configuration (generated from .env.local)
-config/.env
+**/config/.env
