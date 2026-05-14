@@ -22,12 +22,12 @@ if [ "$OTEL_ENABLED" = "true" ]; then
 
     if ! command -v opentelemetry-instrument &> /dev/null; then
         echo "[OTel] Installing opentelemetry-instrument..."
-        uv pip install \
+        uv pip install --python /app/.venv/bin/python \
             opentelemetry-distro \
             opentelemetry-exporter-otlp \
             opentelemetry-instrumentation-system-metrics
         uv run opentelemetry-bootstrap -a requirements 2>/dev/null | while read -r pkg; do
-            uv pip install "$pkg" 2>/dev/null || true
+            uv pip install --python /app/.venv/bin/python "$pkg" 2>/dev/null || true
         done
     fi
 
