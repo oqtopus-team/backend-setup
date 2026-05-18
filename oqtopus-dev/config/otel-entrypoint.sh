@@ -20,8 +20,14 @@ OTEL_ENABLED="${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}"
 if [ "$OTEL_ENABLED" = "true" ]; then
     echo "[OTel] Auto-instrumentation enabled"
 
-    if ! command -v opentelemetry-instrument &> /dev/null; then
-        echo "[OTel] Installing opentelemetry-instrument..."
+    # Detect by checking the distro module directly. The `opentelemetry-instrument`
+    # binary is also installed by `opentelemetry-instrumentation` (without distro),
+    # so `command -v opentelemetry-instrument` would falsely report the auto-init
+    # is wired up and skip the install — the SDK never initialises and traces stay
+    # on the ProxyTracerProvider. Checking `opentelemetry.distro` is the precise
+    # signal: the distro module is what actually configures the SDK on startup.
+    if ! /app/.venv/bin/python -c "import opentelemetry.distro" &> /dev/null; then
+        echo "[OTel] Installing opentelemetry-distro..."
         uv pip install --python /app/.venv/bin/python \
             opentelemetry-distro \
             opentelemetry-exporter-otlp \
