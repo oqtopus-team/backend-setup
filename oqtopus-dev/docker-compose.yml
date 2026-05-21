@@ -57,6 +57,10 @@ services:
       MP_AUTO_BUFFER_MAX_BATCH_SIZE: ${MP_AUTO_BUFFER_MAX_BATCH_SIZE}
       MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED: ${MP_AUTO_BUFFER_MAX_QSIZE_TO_PROCEED}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
+      # Passed through so the engine's config.yaml ${MONITORING_ENABLED, false}
+      # placeholder resolves correctly (config gate for the engine-side
+      # SpanProcessor / instrumentor registration).
+      MONITORING_ENABLED: ${MONITORING_ENABLED:-false}
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-core
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
