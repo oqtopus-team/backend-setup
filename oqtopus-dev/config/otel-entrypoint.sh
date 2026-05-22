@@ -28,9 +28,24 @@ if [ "$OTEL_ENABLED" = "true" ]; then
     # signal: the distro module is what actually configures the SDK on startup.
     if ! /app/.venv/bin/python -c "import opentelemetry.distro" &> /dev/null; then
         echo "[OTel] Installing opentelemetry-distro..."
+
+        # Pin opentelemetry-exporter-otlp to the same release as the already-
+        # installed opentelemetry-sdk. The exporter and sdk are released
+        # together (matching version numbers) and the exporter references SDK-
+        # internal constants that get added between releases — installing the
+        # exporter unpinned pulls a newer release than the project's locked
+        # sdk and silently breaks LogProvider initialisation (the SDK falls
+        # back to ProxyLoggerProvider and OTLP log export becomes a no-op).
+        SDK_VER=$(/app/.venv/bin/python -c 'from importlib.metadata import version; print(version("opentelemetry-sdk"))' 2>/dev/null || true)
+        EXPORTER_SPEC="opentelemetry-exporter-otlp"
+        if [ -n "$SDK_VER" ]; then
+            EXPORTER_SPEC="opentelemetry-exporter-otlp==$SDK_VER"
+            echo "[OTel] Detected opentelemetry-sdk==$SDK_VER, pinning exporter to match."
+        fi
+
         uv pip install --python /app/.venv/bin/python \
             opentelemetry-distro \
-            opentelemetry-exporter-otlp \
+            "$EXPORTER_SPEC" \
             opentelemetry-instrumentation-system-metrics
         uv run opentelemetry-bootstrap -a requirements 2>/dev/null | while read -r pkg; do
             uv pip install --python /app/.venv/bin/python "$pkg" 2>/dev/null || true
