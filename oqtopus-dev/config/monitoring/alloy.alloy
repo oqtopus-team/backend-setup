@@ -43,7 +43,7 @@ pyroscope.ebpf "default" {
 
 pyroscope.write "default" {
   endpoint {
-    url = "http://" + env("MONITORING_SERVER") + ":4040"
+    url = "http://" + env("MONITORING_SERVER") + ":34040"
   }
 
   external_labels = {
