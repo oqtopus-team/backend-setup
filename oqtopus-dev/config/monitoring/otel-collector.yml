@@ -63,7 +63,7 @@ processors:
 
 exporters:
   otlphttp:
-    endpoint: "http://${env:MONITORING_SERVER}:4318"
+    endpoint: "http://${env:MONITORING_SERVER}:34318"
     compression: gzip
 
 extensions:
