@@ -13,6 +13,12 @@ SHELL := bash
 
 ENV_FILE := ./config/.env
 include $(ENV_FILE)
+
+# MONITORING_ENABLED=true → enable Docker Compose monitoring profile
+ifeq ($(MONITORING_ENABLED),true)
+export COMPOSE_PROFILES := monitoring
+endif
+
 COMPOSE := docker compose --env-file $(ENV_FILE)
 
 # ------------------
