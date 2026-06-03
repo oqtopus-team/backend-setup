@@ -209,6 +209,7 @@ services:
       TZ: ${TZ}
       ADDRESS: ${COMBINER_ADDRESS}
       WORKERS: ${COMBINER_WORKERS}
+      IDLE_QUBITS_INSERTION_ENABLED: ${IDLE_QUBITS_INSERTION_ENABLED}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-combiner
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
