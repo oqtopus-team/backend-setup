@@ -236,8 +236,8 @@ services:
     command: ["uv", "run", "python", "src/tranqu_server/proto/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      ADDRESS: ${TRANQU_ADDRESS}
-      WORKERS: ${TRANQU_WORKERS}
+      TRANQU_ADDRESS: ${TRANQU_ADDRESS}
+      TRANQU_WORKERS: ${TRANQU_WORKERS}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-tranqu
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
