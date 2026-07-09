@@ -14,6 +14,8 @@ services:
     command: ["uv", "run", "python", "src/oqtopus_engine_core/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # fetcher configurations
       JOB_FETCHER_INTERVAL_SECONDS: ${JOB_FETCHER_INTERVAL_SECONDS}
       JOB_FETCHER_LIMIT: ${JOB_FETCHER_LIMIT}
@@ -27,6 +29,8 @@ services:
       JOB_REPOSITORY_URL: ${JOB_REPOSITORY_URL}
       JOB_REPOSITORY_API_KEY: ${JOB_REPOSITORY_API_KEY}
       JOB_REPOSITORY_WORKERS: ${JOB_REPOSITORY_WORKERS}
+      JOB_FILE_OP_TIMEOUT_SECONDS: ${JOB_FILE_OP_TIMEOUT_SECONDS}
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE}
       DEVICE_REPOSITORY_URL: ${JOB_REPOSITORY_URL} # the same values as the job repository
       DEVICE_REPOSITORY_API_KEY: ${JOB_REPOSITORY_API_KEY} # the same values as the job repository
       DEVICE_REPOSITORY_WORKERS: ${DEVICE_REPOSITORY_WORKERS}
@@ -94,6 +98,8 @@ services:
     entrypoint: ["/otel/otel-entrypoint.sh"]
     environment:
       TZ: ${TZ}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # fetcher configurations
       SSE_ENGINE_ADDRESS: ${SSE_ENGINE_ADDRESS}
       DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS: ${DEVICE_FETCHER_INITIAL_INTERVAL_SECONDS}
@@ -139,8 +145,10 @@ services:
     command: ["uv", "run", "python", "src/oqtopus_engine_mitigator/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      ADDRESS: ${MITIGATOR_ADDRESS}
-      WORKERS: ${MITIGATOR_WORKERS}
+      MITIGATOR_ADDRESS: ${MITIGATOR_ADDRESS}
+      MITIGATOR_WORKERS: ${MITIGATOR_WORKERS}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-mitigator
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -172,8 +180,10 @@ services:
     command: ["uv", "run", "python", "src/oqtopus_engine_estimator/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      ADDRESS: ${ESTIMATOR_ADDRESS}
-      WORKERS: ${ESTIMATOR_WORKERS}
+      ESTIMATOR_ADDRESS: ${ESTIMATOR_ADDRESS}
+      ESTIMATOR_WORKERS: ${ESTIMATOR_WORKERS}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-estimator
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -205,8 +215,11 @@ services:
     command: ["uv", "run", "python", "src/oqtopus_engine_combiner/app.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      ADDRESS: ${COMBINER_ADDRESS}
-      WORKERS: ${COMBINER_WORKERS}
+      COMBINER_ADDRESS: ${COMBINER_ADDRESS}
+      COMBINER_WORKERS: ${COMBINER_WORKERS}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
+      IDLE_QUBITS_INSERTION_ENABLED: ${IDLE_QUBITS_INSERTION_ENABLED}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-combiner
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -238,8 +251,10 @@ services:
     command: ["uv", "run", "python", "src/tranqu_server/proto/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
-      ADDRESS: ${TRANQU_ADDRESS}
-      WORKERS: ${TRANQU_WORKERS}
+      TRANQU_ADDRESS: ${TRANQU_ADDRESS}
+      TRANQU_WORKERS: ${TRANQU_WORKERS}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-tranqu
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -271,6 +286,10 @@ services:
     command: ["uv", "run", "python", "src/device_gateway/service.py", "-c", "config/config.yaml", "-l", "config/logging.yaml"]
     environment:
       TZ: ${TZ}
+      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+      GATEWAY_WORKERS: ${GATEWAY_WORKERS}
+      GRPC_MAX_RECEIVE_MESSAGE_LENGTH: ${GRPC_MAX_RECEIVE_MESSAGE_LENGTH}
+      GRPC_MAX_SEND_MESSAGE_LENGTH: ${GRPC_MAX_SEND_MESSAGE_LENGTH}
       # OTel auto-instrumentation (enabled when MONITORING_ENABLED=true)
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME_PREFIX:-oqtopus}-gateway
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318

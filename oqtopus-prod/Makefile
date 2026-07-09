@@ -9,10 +9,16 @@ SHELL := bash
 .PHONY: build-sse_runtime up-sse_engine stop-sse_engine restart-sse_engine logs-sse_engine rm-sse_engine build-sse_engine exec-sse_engine
 .PHONY: up-tranqu stop-tranqu restart-tranqu logs-tranqu rm-tranqu build-tranqu exec-tranqu
 .PHONY: up-gateway stop-gateway restart-gateway logs-gateway rm-gateway build-gateway exec-gateway show-current-status change-status-to-active change-status-to-inactive change-status-to-maintenance generate-device-topology
-.PHONY: ps up down images help
+.PHONY: ps up down build-all images help
 
 ENV_FILE := ./config/.env
 include $(ENV_FILE)
+
+# MONITORING_ENABLED=true → enable Docker Compose monitoring profile
+ifeq ($(MONITORING_ENABLED),true)
+export COMPOSE_PROFILES := monitoring
+endif
+
 COMPOSE := docker compose --env-file $(ENV_FILE)
 
 # ------------------
@@ -232,8 +238,10 @@ up: ## start all containers
 down: ## stop all containers
 	$(COMPOSE) down
 
+build-all: build-core build-sse_runtime build-sse_engine build-mitigator build-estimator build-combiner build-tranqu build-gateway ## build all services
+
 images: ## show docker images
-	docker images
+	docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}\t{{.CreatedAt}}"
 
 help: ## show help
 	@echo "Usage: make <target>"
