@@ -20,6 +20,13 @@ discovery.relabel "python_services" {
     target_label  = "service_name"
     replacement   = "oqtopus-$1"
   }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/?(.*)"
+    target_label  = "container"
+    replacement   = "$1"
+  }
 }
 
 pyroscope.ebpf "default" {
@@ -44,6 +51,23 @@ pyroscope.ebpf "default" {
 pyroscope.write "default" {
   endpoint {
     url = "http://" + env("MONITORING_SERVER") + ":34040"
+  }
+
+  external_labels = {
+    instance  = env("DEVICE_ID"),
+    device_id = env("DEVICE_ID"),
+  }
+}
+
+loki.source.docker "engine_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.python_services.output
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://" + env("MONITORING_SERVER") + ":33100/loki/api/v1/push"
   }
 
   external_labels = {
