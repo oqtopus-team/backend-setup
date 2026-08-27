@@ -38,6 +38,10 @@ Rules for manual instrumentation across the backend services
   computed for telemetry when tracing is off. Values such as
   `qc.depth()` are otherwise evaluated on every request even with
   monitoring disabled.
+- Attributes already known when the span starts are passed to
+  `start_as_current_span` instead, so that a sampler can see them.
+- `set_status` is not guarded: it is a no-op on a non-recording span and its
+  argument carries no computation.
 
 ## Status values
 
