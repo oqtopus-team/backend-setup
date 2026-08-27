@@ -40,8 +40,10 @@ Rules for manual instrumentation across the backend services
   monitoring disabled.
 - Attributes already known when the span starts are passed to
   `start_as_current_span` instead, so that a sampler can see them.
-- `set_status` is not guarded: it is a no-op on a non-recording span and its
-  argument carries no computation.
+- `set_status` is guarded the same way. It is a no-op on a non-recording span
+  and its argument is cheap, so the guard is there for uniformity: every call
+  that only exists for telemetry sits behind the same check, and no reader has
+  to judge case by case.
 
 ## Status values
 
