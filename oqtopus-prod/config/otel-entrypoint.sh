@@ -18,26 +18,22 @@ fi
 OTEL_ENABLED="${OTEL_AUTO_INSTRUMENTATION_ENABLED:-false}"
 
 if [ "$OTEL_ENABLED" = "true" ]; then
-    echo "[OTel] Auto-instrumentation enabled"
-
-    # Detect by checking the distro module directly. The `opentelemetry-instrument`
-    # binary is also installed by `opentelemetry-instrumentation` (without distro),
-    # so `command -v opentelemetry-instrument` would falsely report the auto-init
-    # is wired up and skip the install — the SDK never initialises and traces stay
-    # on the ProxyTracerProvider. Checking `opentelemetry.distro` is the precise
-    # signal: the distro module is what actually configures the SDK on startup.
-    if ! /app/.venv/bin/python -c "import opentelemetry.distro" &> /dev/null; then
-        echo "[OTel] Installing opentelemetry-distro..."
-        uv pip install --python /app/.venv/bin/python \
-            opentelemetry-distro \
-            opentelemetry-exporter-otlp \
-            opentelemetry-instrumentation-system-metrics
-        uv run opentelemetry-bootstrap -a requirements 2>/dev/null | while read -r pkg; do
-            uv pip install --python /app/.venv/bin/python "$pkg" 2>/dev/null || true
-        done
-    fi
-
-    echo "[OTel] Starting with auto-instrumentation: $@"
+    # The OTel packages (opentelemetry-distro, opentelemetry-exporter-otlp,
+    # opentelemetry-instrumentation-system-metrics, plus any service-specific
+    # instrumentations) are declared as runtime dependencies in each service's
+    # pyproject.toml and installed at image-build time via `uv sync`. They are
+    # therefore guaranteed to be present here and pinned consistently with the
+    # rest of the locked dependency set.
+    #
+    # An earlier version of this script installed them at container start
+    # (`uv pip install opentelemetry-distro opentelemetry-exporter-otlp ...`).
+    # That pulled the latest pypi release independently of the project's
+    # locked sdk version, and when the exporter ran ahead of the sdk it broke
+    # LogProvider init with a silent ImportError of SDK-internal constants
+    # (`OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED`) — traces kept flowing but
+    # log export silently dropped. The runtime install block has been removed
+    # in favour of build-time install for predictable, reproducible images.
+    echo "[OTel] Auto-instrumentation enabled, starting with: $@"
     exec opentelemetry-instrument "$@"
 else
     echo "[OTel] Auto-instrumentation disabled, starting normally: $@"
