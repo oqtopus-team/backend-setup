@@ -280,7 +280,7 @@ services:
   gateway:
     build:
       context: ./device-gateway
-      dockerfile: Dockerfile.dev
+      dockerfile: ${DOCKERFILE_PATH:-Dockerfile.dev}
       args:
         UID: ${UID}
         GID: ${GID}

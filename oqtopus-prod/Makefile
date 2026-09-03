@@ -8,7 +8,7 @@ SHELL := bash
 .PHONY: up-combiner stop-combiner restart-combiner logs-combiner rm-combiner build-combiner exec-combiner
 .PHONY: build-sse_runtime up-sse_engine stop-sse_engine restart-sse_engine logs-sse_engine rm-sse_engine build-sse_engine exec-sse_engine
 .PHONY: up-tranqu stop-tranqu restart-tranqu logs-tranqu rm-tranqu build-tranqu exec-tranqu
-.PHONY: up-gateway stop-gateway restart-gateway logs-gateway rm-gateway build-gateway exec-gateway show-current-status change-status-to-active change-status-to-inactive change-status-to-maintenance generate-device-topology
+.PHONY: up-gateway stop-gateway down-gateway restart-gateway logs-gateway rm-gateway build-gateway exec-gateway show-current-status change-status-to-active change-status-to-inactive change-status-to-maintenance generate-device-topology
 .PHONY: ps up down build-all images help
 
 ENV_FILE := ./config/.env
@@ -193,6 +193,9 @@ up-gateway: ## start gateway
 
 stop-gateway: ## stop gateway
 	$(COMPOSE) stop gateway
+
+down-gateway: ## stop and remove gateway
+	$(COMPOSE) down gateway
 
 restart-gateway: stop-gateway up-gateway ## restart gateway
 
